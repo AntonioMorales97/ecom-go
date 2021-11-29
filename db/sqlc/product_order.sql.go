@@ -80,7 +80,7 @@ func (q *Queries) ListProductOrders(ctx context.Context, arg ListProductOrdersPa
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ProductOrder
+	items := []ProductOrder{}
 	for rows.Next() {
 		var i ProductOrder
 		if err := rows.Scan(

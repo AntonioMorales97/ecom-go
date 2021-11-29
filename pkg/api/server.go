@@ -1,17 +1,23 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	db "github.com/AntonioMorales97/ecom-go/db/sqlc"
+	"github.com/gin-gonic/gin"
+)
 
 type Server struct {
+	store  *db.Store
 	router *gin.Engine
 }
 
-func NewServer() *Server {
-
-	server := &Server{}
+func NewServer(store *db.Store) *Server {
+	server := &Server{store: store}
 	router := gin.Default()
 
-	router.POST("/book", server.createBooking)
+	router.POST("/order", server.createProductOrder)
+	router.GET("/order/:id", server.getProductOrder)
+
+	router.GET("/products", server.listProducts)
 
 	server.router = router
 

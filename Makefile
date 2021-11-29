@@ -19,4 +19,7 @@ sqlcwindows:
 test:
 	go test -v -cover ./...
 
+server:
+	go run cmd/ecom-go/main.go
+
 .PHONY: postgres createdb dropdb migrateup migratedown sqlcwindows test
