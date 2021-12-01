@@ -6,23 +6,30 @@ import (
 	"os"
 	"testing"
 
+	"github.com/AntonioMorales97/ecom-go/internal/config"
+	"github.com/AntonioMorales97/ecom-go/internal/logger"
 	_ "github.com/lib/pq"
-)
 
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:secret@localhost:5432/ecom?sslmode=disable"
+	"go.uber.org/zap"
 )
 
 var testQueries *Queries
 var testDB *sql.DB
 
 func TestMain(m *testing.M) {
-	var err error
-
-	testDB, err = sql.Open(dbDriver, dbSource)
+	config, err := config.LoadConfig("../..")
 	if err != nil {
-		log.Fatal("Cannot connect to the database:", err)
+		log.Fatal("failed to init Viper", zap.Error(err))
+	}
+
+	err = logger.InitializeZapCustomLogger(config.Env)
+	if err != nil {
+		log.Fatal("failed to init logger")
+	}
+
+	testDB, err = sql.Open(config.Db.Driver, config.Db.Source)
+	if err != nil {
+		log.Fatal("failed to connect to db", err)
 	}
 
 	testQueries = New(testDB)

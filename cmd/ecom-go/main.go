@@ -13,13 +13,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:secret@localhost:5432/ecom?sslmode=disable"
-)
-
 func main() {
-
 	config, err := config.LoadConfig(".")
 	if err != nil {
 		log.Fatal("failed to init Viper", zap.Error(err))
@@ -30,7 +24,7 @@ func main() {
 		log.Fatal("failed to init logger")
 	}
 
-	conn, err := sql.Open(dbDriver, dbSource)
+	conn, err := sql.Open(config.Db.Driver, config.Db.Source)
 	if err != nil {
 		log.Fatal("failed to connect to db", err)
 	}

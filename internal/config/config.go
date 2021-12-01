@@ -7,11 +7,17 @@ import (
 type Config struct {
 	Server ServerConfig
 	Env    string
+	Db     DbConfig
 }
 
 type ServerConfig struct {
 	Host string
 	Port int
+}
+
+type DbConfig struct {
+	Driver string
+	Source string
 }
 
 func LoadConfig(path string) (config Config, err error) {
