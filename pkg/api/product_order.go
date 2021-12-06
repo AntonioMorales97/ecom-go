@@ -25,7 +25,7 @@ func (server *Server) createProductOrder(ctx *gin.Context) {
 		ProductID: req.ProductID,
 	}
 
-	productOrder, err := server.store.CreateProductOrder(ctx, arg)
+	productOrder, err := server.store.CreateProductOrderTx(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

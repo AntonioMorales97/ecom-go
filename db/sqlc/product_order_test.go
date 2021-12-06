@@ -1,0 +1,91 @@
+package db
+
+import (
+	"context"
+	"database/sql"
+	"testing"
+	"time"
+
+	"github.com/AntonioMorales97/ecom-go/pkg/util"
+	"github.com/stretchr/testify/require"
+)
+
+func createRandomProductOrder(t *testing.T) ProductOrder {
+	product := createRandomProduct(t)
+	quantity := util.RandomInt32(1, 1000)
+
+	productOrder, err := testQueries.CreateProductOrder(context.Background(), CreateProductOrderParams{
+		ProductID: product.ID,
+		Quantity:  quantity,
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, productOrder)
+	require.Equal(t, product.ID, productOrder.ProductID)
+	require.Equal(t, quantity, productOrder.Quantity)
+	return productOrder
+}
+
+func TestCreateProductOrder(t *testing.T) {
+	createRandomProductOrder(t)
+}
+
+func TestGetProductOrder(t *testing.T) {
+	productOrder1 := createRandomProductOrder(t)
+	productOrder2, err := testQueries.GetProductOrder(context.Background(), productOrder1.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, productOrder2)
+
+	require.Equal(t, productOrder1.ID, productOrder2.ID)
+	require.Equal(t, productOrder1.ProductID, productOrder2.ProductID)
+	require.Equal(t, productOrder1.Quantity, productOrder2.Quantity)
+	require.WithinDuration(t, productOrder1.CreatedAt, productOrder2.CreatedAt, time.Second)
+	require.WithinDuration(t, productOrder1.UpdatedAt, productOrder2.UpdatedAt, time.Second)
+}
+
+func TestUpdateProductOrder(t *testing.T) {
+	productOrder1 := createRandomProductOrder(t)
+
+	arg := UpdateProductOrderQuantityParams{
+		productOrder1.ID,
+		util.RandomInt32(productOrder1.Quantity+1, productOrder1.Quantity+1000),
+	}
+	productOrder2, err := testQueries.UpdateProductOrderQuantity(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, productOrder2)
+
+	require.Equal(t, productOrder1.ID, productOrder2.ID)
+	require.Equal(t, arg.Quantity, productOrder2.Quantity)
+	require.NotEqual(t, productOrder1.Quantity, productOrder2.Quantity)
+	require.WithinDuration(t, productOrder1.CreatedAt, productOrder2.CreatedAt, time.Second)
+	require.NotEqual(t, productOrder1.UpdatedAt, productOrder2.UpdatedAt)
+}
+
+func TestDeleteProductOrder(t *testing.T) {
+	productOrder1 := createRandomProductOrder(t)
+	err := testQueries.DeleteProductOrder(context.Background(), productOrder1.ID)
+	require.NoError(t, err)
+
+	productOrder2, err := testQueries.GetProductOrder(context.Background(), productOrder1.ID)
+	require.Error(t, err)
+	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.Empty(t, productOrder2)
+}
+
+func TestListProductOrder(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		createRandomProductOrder(t)
+	}
+
+	arg := ListProductOrdersParams{
+		Limit:  5,
+		Offset: 5,
+	}
+
+	productOrders, err := testQueries.ListProductOrders(context.Background(), arg)
+	require.NoError(t, err)
+	require.Len(t, productOrders, 5)
+
+	for _, product := range productOrders {
+		require.NotEmpty(t, product)
+	}
+}

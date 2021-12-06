@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomProductTx(t *testing.T, createProductTxArg CreateProductTxParams, store *Store) CreateProductResult {
+func createRandomProductTx(t *testing.T, createProductTxArg CreateProductTxParams, store Store) CreateProductResult {
 
 	createProductResult, err := store.CreateProductTx(context.Background(), createProductTxArg)
 

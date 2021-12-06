@@ -106,11 +106,11 @@ func TestListProduct(t *testing.T) {
 		Offset: 5,
 	}
 
-	product, err := testQueries.ListProducts(context.Background(), arg)
+	products, err := testQueries.ListProducts(context.Background(), arg)
 	require.NoError(t, err)
-	require.Len(t, product, 5)
+	require.Len(t, products, 5)
 
-	for _, product := range product {
+	for _, product := range products {
 		require.NotEmpty(t, product)
 	}
 }

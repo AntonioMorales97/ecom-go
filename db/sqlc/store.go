@@ -6,19 +6,25 @@ import (
 	"fmt"
 )
 
-type Store struct {
+type Store interface {
+	Querier
+	CreateProductTx(ctx context.Context, arg CreateProductTxParams) (CreateProductResult, error)
+	CreateProductOrderTx(ctx context.Context, arg CreateProductOrderParams) (CreateProductOrderResult, error)
+}
+
+type SQLStore struct {
 	*Queries
 	db *sql.DB
 }
 
-func NewStore(db *sql.DB) *Store {
-	return &Store{
+func NewStore(db *sql.DB) Store {
+	return &SQLStore{
 		db:      db,
 		Queries: New(db),
 	}
 }
 
-func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
+func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) error {
 	tx, err := store.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -53,7 +59,7 @@ type CreateProductResult struct {
 	Quantity int32   `json: "quantity"`
 }
 
-func (store *Store) CreateProductTx(ctx context.Context, arg CreateProductTxParams) (CreateProductResult, error) {
+func (store *SQLStore) CreateProductTx(ctx context.Context, arg CreateProductTxParams) (CreateProductResult, error) {
 
 	var result CreateProductResult
 
@@ -112,7 +118,7 @@ type CreateProductOrderResult struct {
 	ProductOrder ProductOrder `json: "product_order"`
 }
 
-func (store *Store) CreateProductOrderTx(ctx context.Context, arg CreateProductOrderParams) (CreateProductOrderResult, error) {
+func (store *SQLStore) CreateProductOrderTx(ctx context.Context, arg CreateProductOrderParams) (CreateProductOrderResult, error) {
 	var result CreateProductOrderResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
