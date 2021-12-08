@@ -33,7 +33,7 @@ func getRandomCreateProductTxParams(t *testing.T, quantity int32) CreateProductT
 		DescriptionShort:  descriptionShort,
 		Price:             util.RandomInt32(100, 1000),
 		ProductTypeID:     productType.ID,
-		ProductCategoryID: productCategory.ID,
+		ProductCategoryID: &productCategory.ID,
 		Quantity:          quantity,
 	}
 }

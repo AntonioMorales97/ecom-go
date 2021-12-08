@@ -52,7 +52,7 @@ type CreateProductTxParams struct {
 	DescriptionShort  string `json:"description_short"`
 	Price             int32  `json:"price"`
 	ProductTypeID     int64  `json:"product_type_id"`
-	ProductCategoryID int64  `json:"product_category_id"`
+	ProductCategoryID *int64 `json:"product_category_id"`
 	Quantity          int32  `json:"quantity"`
 }
 
@@ -78,7 +78,7 @@ func (store *SQLStore) CreateProductTx(ctx context.Context, arg CreateProductTxP
 			DescriptionShort:   util.ToNullString(&arg.DescriptionShort),
 			Price:              arg.Price,
 			ProductTypeID:      arg.ProductTypeID,
-			ProductCategoryID:  util.ToNullInt64(&arg.ProductCategoryID),
+			ProductCategoryID:  util.ToNullInt64(arg.ProductCategoryID),
 			ProductInventoryID: productInventory.ID,
 		})
 		if err != nil {
