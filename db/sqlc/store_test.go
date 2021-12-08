@@ -22,7 +22,7 @@ func createRandomProductTx(t *testing.T, createProductTxArg CreateProductTxParam
 }
 
 func getRandomCreateProductTxParams(t *testing.T, quantity int32) CreateProductTxParams {
-	productType := createRandomProductType(t)
+	productType := getRandomProductType(t)
 	productCategory := createRandomProductCategory(t)
 
 	descriptionShort := util.RandomString(10)
@@ -59,7 +59,7 @@ func TestCreateProductOrderTx(t *testing.T) {
 	errs := make(chan error)
 	results := make(chan CreateProductOrderResult)
 
-	// run n concurrent transfer transaction
+	// run n concurrent create product orders
 	for i := 0; i < n; i++ {
 		go func() {
 			result, err := store.CreateProductOrderTx(context.Background(), CreateProductOrderParams{

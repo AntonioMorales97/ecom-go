@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
+	"github.com/AntonioMorales97/ecom-go/pkg/util"
 )
 
 type Store interface {
@@ -72,11 +74,11 @@ func (store *SQLStore) CreateProductTx(ctx context.Context, arg CreateProductTxP
 
 		result.Product, err = q.CreateProduct(ctx, CreateProductParams{
 			Name:               arg.Name,
-			DescriptionLong:    toNullString(&arg.DescriptionLong),
-			DescriptionShort:   toNullString(&arg.DescriptionShort),
+			DescriptionLong:    util.ToNullString(&arg.DescriptionLong),
+			DescriptionShort:   util.ToNullString(&arg.DescriptionShort),
 			Price:              arg.Price,
-			ProductTypeID:      arg.ProductCategoryID,
-			ProductCategoryID:  toNullInt64(&arg.ProductCategoryID),
+			ProductTypeID:      arg.ProductTypeID,
+			ProductCategoryID:  util.ToNullInt64(&arg.ProductCategoryID),
 			ProductInventoryID: productInventory.ID,
 		})
 		if err != nil {
@@ -90,28 +92,6 @@ func (store *SQLStore) CreateProductTx(ctx context.Context, arg CreateProductTxP
 
 	return result, err
 
-}
-
-func toNullString(eventStr *string) sql.NullString {
-	var nullString sql.NullString
-	if len(*eventStr) == 0 {
-		nullString.Valid = false
-	} else {
-		nullString.String = *eventStr
-		nullString.Valid = true
-	}
-	return nullString
-}
-
-func toNullInt64(eventInt64 *int64) sql.NullInt64 {
-	var nullInt64 sql.NullInt64
-	nullInt64.Valid = (eventInt64 != nil)
-	if !nullInt64.Valid {
-		return nullInt64
-	}
-
-	nullInt64.Int64 = *eventInt64
-	return nullInt64
 }
 
 type CreateProductOrderResult struct {

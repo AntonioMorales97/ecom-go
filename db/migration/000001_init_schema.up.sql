@@ -1,5 +1,5 @@
 CREATE TABLE "product_type" (
-  "id" bigserial PRIMARY KEY,
+  "id" bigint PRIMARY KEY,
   "name" varchar NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz NOT NULL DEFAULT (now())
@@ -82,3 +82,6 @@ CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON product_order
 FOR EACH ROW
 EXECUTE FUNCTION trigger_set_timestamp();
+
+INSERT INTO "product_type" ("id", "name")
+VALUES (1, 'PRODUCT'), (2, 'SERVICE')

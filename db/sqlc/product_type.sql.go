@@ -7,36 +7,6 @@ import (
 	"context"
 )
 
-const createProductType = `-- name: CreateProductType :one
-INSERT INTO product_type (
-    name
-) VALUES (
-    $1
-) RETURNING id, name, created_at, updated_at
-`
-
-func (q *Queries) CreateProductType(ctx context.Context, name string) (ProductType, error) {
-	row := q.db.QueryRowContext(ctx, createProductType, name)
-	var i ProductType
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const deleteProductType = `-- name: DeleteProductType :exec
-DELETE FROM product_type
-WHERE id = $1
-`
-
-func (q *Queries) DeleteProductType(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteProductType, id)
-	return err
-}
-
 const getProductType = `-- name: GetProductType :one
 SELECT id, name, created_at, updated_at FROM product_type
 WHERE id = $1 LIMIT 1
@@ -92,28 +62,4 @@ func (q *Queries) ListProductTypes(ctx context.Context, arg ListProductTypesPara
 		return nil, err
 	}
 	return items, nil
-}
-
-const updateProductType = `-- name: UpdateProductType :one
-UPDATE product_type
-SET name = $2
-WHERE id = $1
-RETURNING id, name, created_at, updated_at
-`
-
-type UpdateProductTypeParams struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
-}
-
-func (q *Queries) UpdateProductType(ctx context.Context, arg UpdateProductTypeParams) (ProductType, error) {
-	row := q.db.QueryRowContext(ctx, updateProductType, arg.ID, arg.Name)
-	var i ProductType
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
 }

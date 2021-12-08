@@ -11,12 +11,10 @@ type Querier interface {
 	CreateProductCategory(ctx context.Context, name string) (ProductCategory, error)
 	CreateProductInventory(ctx context.Context, quantity int32) (ProductInventory, error)
 	CreateProductOrder(ctx context.Context, arg CreateProductOrderParams) (ProductOrder, error)
-	CreateProductType(ctx context.Context, name string) (ProductType, error)
 	DeleteProduct(ctx context.Context, id int64) error
 	DeleteProductCategory(ctx context.Context, id int64) error
 	DeleteProductInventory(ctx context.Context, id int64) error
 	DeleteProductOrder(ctx context.Context, id int64) error
-	DeleteProductType(ctx context.Context, id int64) error
 	GetProduct(ctx context.Context, id int64) (Product, error)
 	GetProductCategory(ctx context.Context, id int64) (ProductCategory, error)
 	GetProductInventory(ctx context.Context, id int64) (ProductInventory, error)
@@ -34,7 +32,6 @@ type Querier interface {
 	UpdateProductInventoryQuantityForProduct(ctx context.Context, arg UpdateProductInventoryQuantityForProductParams) (ProductInventory, error)
 	UpdateProductName(ctx context.Context, arg UpdateProductNameParams) (Product, error)
 	UpdateProductOrderQuantity(ctx context.Context, arg UpdateProductOrderQuantityParams) (ProductOrder, error)
-	UpdateProductType(ctx context.Context, arg UpdateProductTypeParams) (ProductType, error)
 }
 
 var _ Querier = (*Queries)(nil)

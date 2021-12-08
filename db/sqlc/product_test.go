@@ -11,7 +11,7 @@ import (
 )
 
 func createRandomCreateProductParams(t *testing.T) CreateProductParams {
-	productType := createRandomProductType(t)
+	productType := getRandomProductType(t)
 	productCategory := createRandomProductCategory(t)
 	productInventory := createTestProductInventory(t, util.RandomInt32(0, 100))
 
