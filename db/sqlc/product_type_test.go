@@ -8,12 +8,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func getRandomProductTypeID() int64 {
-	return util.RandomInt64(1, 2)
-}
-
 func getRandomProductType(t *testing.T) ProductType {
-	productTypeID := getRandomProductTypeID()
+	productTypeID := util.RandomProductTypeID()
 	productType, err := testQueries.GetProductType(context.Background(), productTypeID)
 	require.NoError(t, err)
 	require.NotEmpty(t, productType)

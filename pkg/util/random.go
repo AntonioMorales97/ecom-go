@@ -34,8 +34,8 @@ func RandomString(n int) string {
 	return sb.String()
 }
 
-func RandomCurrency() string {
-	currencies := []string{"SEK", "USD", "EUR"}
-	n := len(currencies)
-	return currencies[rand.Intn(n)]
+func RandomProductTypeID() int64 {
+	productTypes := []int64{PRODUCT, SERVICE}
+	n := len(productTypes)
+	return productTypes[rand.Intn(n)]
 }
