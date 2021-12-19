@@ -34,6 +34,7 @@ CREATE TABLE "product_inventory" (
 
 CREATE TABLE "product_order" (
   "id" bigserial PRIMARY KEY,
+  "owner" varchar NOT NULL,
   "quantity" int NOT NULL,
   "product_id" bigint NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
