@@ -10,22 +10,25 @@ import (
 const createProductOrder = `-- name: CreateProductOrder :one
 INSERT INTO product_order (
     quantity,
-    product_id
+    product_id,
+    owner
 ) VALUES (
-    $1, $2
-) RETURNING id, quantity, product_id, created_at, updated_at
+    $1, $2, $3
+) RETURNING id, owner, quantity, product_id, created_at, updated_at
 `
 
 type CreateProductOrderParams struct {
-	Quantity  int32 `json:"quantity"`
-	ProductID int64 `json:"product_id"`
+	Quantity  int32  `json:"quantity"`
+	ProductID int64  `json:"product_id"`
+	Owner     string `json:"owner"`
 }
 
 func (q *Queries) CreateProductOrder(ctx context.Context, arg CreateProductOrderParams) (ProductOrder, error) {
-	row := q.db.QueryRowContext(ctx, createProductOrder, arg.Quantity, arg.ProductID)
+	row := q.db.QueryRowContext(ctx, createProductOrder, arg.Quantity, arg.ProductID, arg.Owner)
 	var i ProductOrder
 	err := row.Scan(
 		&i.ID,
+		&i.Owner,
 		&i.Quantity,
 		&i.ProductID,
 		&i.CreatedAt,
@@ -45,7 +48,7 @@ func (q *Queries) DeleteProductOrder(ctx context.Context, id int64) error {
 }
 
 const getProductOrder = `-- name: GetProductOrder :one
-SELECT id, quantity, product_id, created_at, updated_at FROM product_order
+SELECT id, owner, quantity, product_id, created_at, updated_at FROM product_order
 WHERE id = $1 LIMIT 1
 `
 
@@ -54,6 +57,7 @@ func (q *Queries) GetProductOrder(ctx context.Context, id int64) (ProductOrder, 
 	var i ProductOrder
 	err := row.Scan(
 		&i.ID,
+		&i.Owner,
 		&i.Quantity,
 		&i.ProductID,
 		&i.CreatedAt,
@@ -63,7 +67,7 @@ func (q *Queries) GetProductOrder(ctx context.Context, id int64) (ProductOrder, 
 }
 
 const listProductOrders = `-- name: ListProductOrders :many
-SELECT id, quantity, product_id, created_at, updated_at FROM product_order
+SELECT id, owner, quantity, product_id, created_at, updated_at FROM product_order
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -85,6 +89,7 @@ func (q *Queries) ListProductOrders(ctx context.Context, arg ListProductOrdersPa
 		var i ProductOrder
 		if err := rows.Scan(
 			&i.ID,
+			&i.Owner,
 			&i.Quantity,
 			&i.ProductID,
 			&i.CreatedAt,
@@ -107,7 +112,7 @@ const updateProductOrderQuantity = `-- name: UpdateProductOrderQuantity :one
 UPDATE product_order
 SET quantity = $2
 WHERE id = $1
-RETURNING id, quantity, product_id, created_at, updated_at
+RETURNING id, owner, quantity, product_id, created_at, updated_at
 `
 
 type UpdateProductOrderQuantityParams struct {
@@ -120,6 +125,7 @@ func (q *Queries) UpdateProductOrderQuantity(ctx context.Context, arg UpdateProd
 	var i ProductOrder
 	err := row.Scan(
 		&i.ID,
+		&i.Owner,
 		&i.Quantity,
 		&i.ProductID,
 		&i.CreatedAt,

@@ -107,6 +107,7 @@ func (store *SQLStore) CreateProductOrderTx(ctx context.Context, arg CreateProdu
 		result.ProductOrder, err = q.CreateProductOrder(ctx, CreateProductOrderParams{
 			ProductID: arg.ProductID,
 			Quantity:  arg.Quantity,
+			Owner:     arg.Owner,
 		})
 		if err != nil {
 			return err

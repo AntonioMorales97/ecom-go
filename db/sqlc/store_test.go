@@ -51,6 +51,7 @@ func TestCreateProductOrderTx(t *testing.T) {
 
 	createProductTxParams := getRandomCreateProductTxParams(t, 1000)
 	productResult := createRandomProductTx(t, createProductTxParams, store)
+	user := createRandomUser(t)
 
 	n := 5
 	minAmount := int32(1)
@@ -65,6 +66,7 @@ func TestCreateProductOrderTx(t *testing.T) {
 			result, err := store.CreateProductOrderTx(context.Background(), CreateProductOrderParams{
 				ProductID: productResult.Product.ID,
 				Quantity:  util.RandomInt32(minAmount, maxAmount),
+				Owner:     user.Username,
 			})
 
 			errs <- err
@@ -87,6 +89,7 @@ func TestCreateProductOrderTx(t *testing.T) {
 		require.NotEmpty(t, productOrder.CreatedAt)
 		require.NotEmpty(t, productOrder.UpdatedAt)
 		require.Equal(t, productResult.Product.ID, productOrder.ProductID)
+		require.Equal(t, productOrder.Owner, user.Username)
 		require.True(t, productOrder.Quantity >= minAmount && productOrder.Quantity <= maxAmount)
 
 		// increment total amount

@@ -1,9 +1,10 @@
 -- name: CreateProductOrder :one
 INSERT INTO product_order (
     quantity,
-    product_id
+    product_id,
+    owner
 ) VALUES (
-    $1, $2
+    $1, $2, $3
 ) RETURNING *;
 
 -- name: GetProductOrder :one

@@ -36,6 +36,7 @@ type ProductInventory struct {
 
 type ProductOrder struct {
 	ID        int64     `json:"id"`
+	Owner     string    `json:"owner"`
 	Quantity  int32     `json:"quantity"`
 	ProductID int64     `json:"product_id"`
 	CreatedAt time.Time `json:"created_at"`
@@ -47,4 +48,13 @@ type ProductType struct {
 	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type User struct {
+	Username          string    `json:"username"`
+	HashedPassword    string    `json:"hashed_password"`
+	FullName          string    `json:"full_name"`
+	Email             string    `json:"email"`
+	PasswordChangedAt time.Time `json:"password_changed_at"`
+	CreatedAt         time.Time `json:"created_at"`
 }

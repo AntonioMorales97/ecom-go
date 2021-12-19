@@ -12,16 +12,19 @@ import (
 
 func createRandomProductOrder(t *testing.T) ProductOrder {
 	product := createRandomProduct(t)
+	user := createRandomUser(t)
 	quantity := util.RandomInt32(1, 1000)
 
 	productOrder, err := testQueries.CreateProductOrder(context.Background(), CreateProductOrderParams{
 		ProductID: product.ID,
 		Quantity:  quantity,
+		Owner:     user.Username,
 	})
 	require.NoError(t, err)
 	require.NotEmpty(t, productOrder)
 	require.Equal(t, product.ID, productOrder.ProductID)
 	require.Equal(t, quantity, productOrder.Quantity)
+	require.Equal(t, productOrder.Owner, user.Username)
 	return productOrder
 }
 
@@ -38,6 +41,7 @@ func TestGetProductOrder(t *testing.T) {
 	require.Equal(t, productOrder1.ID, productOrder2.ID)
 	require.Equal(t, productOrder1.ProductID, productOrder2.ProductID)
 	require.Equal(t, productOrder1.Quantity, productOrder2.Quantity)
+	require.Equal(t, productOrder1.Owner, productOrder2.Owner)
 	require.WithinDuration(t, productOrder1.CreatedAt, productOrder2.CreatedAt, time.Second)
 	require.WithinDuration(t, productOrder1.UpdatedAt, productOrder2.UpdatedAt, time.Second)
 }
