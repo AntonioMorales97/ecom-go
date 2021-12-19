@@ -23,6 +23,7 @@ type Querier interface {
 	GetProductInventoryForProductForUpdate(ctx context.Context, id int64) (ProductInventory, error)
 	GetProductOrder(ctx context.Context, id int64) (ProductOrder, error)
 	GetProductType(ctx context.Context, id int64) (ProductType, error)
+	GetUser(ctx context.Context, username string) (User, error)
 	ListProductCategories(ctx context.Context, arg ListProductCategoriesParams) ([]ProductCategory, error)
 	ListProductInventories(ctx context.Context, arg ListProductInventoriesParams) ([]ProductInventory, error)
 	ListProductOrders(ctx context.Context, arg ListProductOrdersParams) ([]ProductOrder, error)
