@@ -2,15 +2,18 @@ package api
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 
 	db "github.com/AntonioMorales97/ecom-go/db/sqlc"
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 )
 
 type createProductOrderRequest struct {
-	Quantity  int32 `json:"quantity" binding:"required,min=1"`
-	ProductID int64 `json:"product_id" binding:"required,min=0"`
+	Quantity  int32  `json:"quantity" binding:"required,min=1"`
+	ProductID int64  `json:"product_id" binding:"required,min=0"`
+	Owner     string `json:"owner" binding:"required"`
 }
 
 func (server *Server) createProductOrder(ctx *gin.Context) {
@@ -23,10 +26,14 @@ func (server *Server) createProductOrder(ctx *gin.Context) {
 	arg := db.CreateProductOrderParams{
 		Quantity:  req.Quantity,
 		ProductID: req.ProductID,
+		Owner:     req.Owner,
 	}
 
 	productOrder, err := server.store.CreateProductOrderTx(ctx, arg)
 	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			log.Println(pqErr.Code.Name())
+		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}

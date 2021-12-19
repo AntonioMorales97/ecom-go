@@ -118,18 +118,20 @@ func TestCreateProductOrderAPI(t *testing.T) {
 			body: gin.H{
 				"quantity":   productOrder.Quantity,
 				"product_id": productOrder.ProductID,
+				"owner":      productOrder.Owner,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().CreateProductOrderTx(gomock.Any(), gomock.Eq(db.CreateProductOrderParams{
 					Quantity:  productOrder.Quantity,
 					ProductID: productOrder.ProductID,
+					Owner:     productOrder.Owner,
 				})).
 					Times(1).
-					Return(db.CreateProductOrderResult{ProductOrder: productOrder}, nil)
+					Return(productOrder, nil)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
-				requireBodyMatchProductOrderResult(t, recorder.Body, db.CreateProductOrderResult{ProductOrder: productOrder})
+				requireBodyMatchProductOrder(t, recorder.Body, productOrder)
 			},
 		},
 		{
@@ -137,11 +139,12 @@ func TestCreateProductOrderAPI(t *testing.T) {
 			body: gin.H{
 				"quantity":   0,
 				"product_id": productOrder.ProductID,
+				"owner":      productOrder.Owner,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().CreateProductOrderTx(gomock.Any(), gomock.Any()).
 					Times(0).
-					Return(db.CreateProductOrderResult{ProductOrder: productOrder}, nil)
+					Return(productOrder, nil)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
@@ -152,14 +155,16 @@ func TestCreateProductOrderAPI(t *testing.T) {
 			body: gin.H{
 				"quantity":   productOrder.Quantity,
 				"product_id": productOrder.ProductID,
+				"owner":      productOrder.Owner,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().CreateProductOrderTx(gomock.Any(), gomock.Eq(db.CreateProductOrderParams{
 					Quantity:  productOrder.Quantity,
 					ProductID: productOrder.ProductID,
+					Owner:     productOrder.Owner,
 				})).
 					Times(1).
-					Return(db.CreateProductOrderResult{}, sql.ErrConnDone)
+					Return(db.ProductOrder{}, sql.ErrConnDone)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
@@ -199,6 +204,7 @@ func randomProductOrder() db.ProductOrder {
 		ID:        util.RandomInt64(1, 1000),
 		Quantity:  util.RandomInt32(1, 100),
 		ProductID: util.RandomInt64(1, 1000),
+		Owner:     util.RandomString(5),
 	}
 }
 
@@ -210,14 +216,4 @@ func requireBodyMatchProductOrder(t *testing.T, body *bytes.Buffer, productOrder
 	err = json.Unmarshal(data, &gotProductOrder)
 	require.NoError(t, err)
 	require.Equal(t, productOrder, gotProductOrder)
-}
-
-func requireBodyMatchProductOrderResult(t *testing.T, body *bytes.Buffer, productOrderResult db.CreateProductOrderResult) {
-	data, err := ioutil.ReadAll(body)
-	require.NoError(t, err)
-
-	var gotProductOrderResult db.CreateProductOrderResult
-	err = json.Unmarshal(data, &gotProductOrderResult)
-	require.NoError(t, err)
-	require.Equal(t, productOrderResult, gotProductOrderResult)
 }

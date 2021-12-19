@@ -58,7 +58,7 @@ func TestCreateProductOrderTx(t *testing.T) {
 	maxAmount := int32(199)
 
 	errs := make(chan error)
-	results := make(chan CreateProductOrderResult)
+	results := make(chan ProductOrder)
 
 	// run n concurrent create product orders
 	for i := 0; i < n; i++ {
@@ -84,16 +84,15 @@ func TestCreateProductOrderTx(t *testing.T) {
 		require.NotEmpty(t, result)
 
 		// check product order
-		productOrder := result.ProductOrder
-		require.NotEmpty(t, productOrder)
-		require.NotEmpty(t, productOrder.CreatedAt)
-		require.NotEmpty(t, productOrder.UpdatedAt)
-		require.Equal(t, productResult.Product.ID, productOrder.ProductID)
-		require.Equal(t, productOrder.Owner, user.Username)
-		require.True(t, productOrder.Quantity >= minAmount && productOrder.Quantity <= maxAmount)
+		require.NotEmpty(t, result)
+		require.NotEmpty(t, result.CreatedAt)
+		require.NotEmpty(t, result.UpdatedAt)
+		require.Equal(t, productResult.Product.ID, result.ProductID)
+		require.Equal(t, result.Owner, user.Username)
+		require.True(t, result.Quantity >= minAmount && result.Quantity <= maxAmount)
 
 		// increment total amount
-		totalAmount += productOrder.Quantity
+		totalAmount += result.Quantity
 	}
 
 	productInventory, err := store.GetProductInventoryForProduct(context.Background(), productResult.Product.ID)

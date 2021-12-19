@@ -11,7 +11,7 @@ import (
 type Store interface {
 	Querier
 	CreateProductTx(ctx context.Context, arg CreateProductTxParams) (CreateProductResult, error)
-	CreateProductOrderTx(ctx context.Context, arg CreateProductOrderParams) (CreateProductOrderResult, error)
+	CreateProductOrderTx(ctx context.Context, arg CreateProductOrderParams) (ProductOrder, error)
 }
 
 type SQLStore struct {
@@ -94,17 +94,13 @@ func (store *SQLStore) CreateProductTx(ctx context.Context, arg CreateProductTxP
 
 }
 
-type CreateProductOrderResult struct {
-	ProductOrder ProductOrder `json: "product_order"`
-}
-
-func (store *SQLStore) CreateProductOrderTx(ctx context.Context, arg CreateProductOrderParams) (CreateProductOrderResult, error) {
-	var result CreateProductOrderResult
+func (store *SQLStore) CreateProductOrderTx(ctx context.Context, arg CreateProductOrderParams) (ProductOrder, error) {
+	var result ProductOrder
 
 	err := store.execTx(ctx, func(q *Queries) error {
 		var err error
 
-		result.ProductOrder, err = q.CreateProductOrder(ctx, CreateProductOrderParams{
+		result, err = q.CreateProductOrder(ctx, CreateProductOrderParams{
 			ProductID: arg.ProductID,
 			Quantity:  arg.Quantity,
 			Owner:     arg.Owner,
