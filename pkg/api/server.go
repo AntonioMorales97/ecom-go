@@ -20,6 +20,8 @@ func NewServer(store db.Store) *Server {
 		v.RegisterValidation("product_type_id", validProductTypeID)
 	}
 
+	router.POST("/users", server.createUser)
+
 	router.POST("/order", server.createProductOrder)
 	router.GET("/order/:id", server.getProductOrder)
 
