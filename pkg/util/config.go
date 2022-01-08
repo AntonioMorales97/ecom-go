@@ -24,8 +24,8 @@ type DbConfig struct {
 }
 
 type TokenConfig struct {
-	SymmetricKey   string `mapstructure:"symmetric_key"`
-	AccessDuration time.Duration
+	SymmetricKey   string        `mapstructure:"symmetric_key"`
+	AccessDuration time.Duration `mapstructure:"access_duration"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
