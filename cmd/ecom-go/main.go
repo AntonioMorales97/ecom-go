@@ -6,20 +6,19 @@ import (
 	"strconv"
 
 	db "github.com/AntonioMorales97/ecom-go/db/sqlc"
-	"github.com/AntonioMorales97/ecom-go/internal/config"
-	"github.com/AntonioMorales97/ecom-go/internal/logger"
 	"github.com/AntonioMorales97/ecom-go/pkg/api"
+	"github.com/AntonioMorales97/ecom-go/pkg/util"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
 func main() {
-	config, err := config.LoadConfig(".")
+	config, err := util.LoadConfig(".")
 	if err != nil {
 		log.Fatal("failed to init Viper", zap.Error(err))
 	}
 
-	err = logger.InitializeZapCustomLogger(config.Env)
+	err = util.InitializeZapCustomLogger(config.Env)
 	if err != nil {
 		log.Fatal("failed to init logger")
 	}
@@ -30,7 +29,10 @@ func main() {
 	}
 
 	store := db.NewStore(conn)
-	server := api.NewServer(store)
+	server, err := api.NewServer(config, store)
+	if err != nil {
+		log.Fatal("failed to create server", err)
+	}
 
 	err = server.Start(config.Server.Host + ":" + strconv.Itoa(config.Server.Port))
 	if err != nil {

@@ -5,3 +5,6 @@ server:
 db:
   driver: "postgres"
   source: "postgresql://root:secret@localhost:5432/ecom?sslmode=disable"
+token:
+  symmetric_key: 12345678901234567890123456789012
+  access_duration: 15m

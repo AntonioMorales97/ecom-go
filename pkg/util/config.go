@@ -1,6 +1,8 @@
-package config
+package util
 
 import (
+	"time"
+
 	"github.com/spf13/viper"
 )
 
@@ -8,6 +10,7 @@ type Config struct {
 	Server ServerConfig
 	Env    string
 	Db     DbConfig
+	Token  TokenConfig
 }
 
 type ServerConfig struct {
@@ -18,6 +21,11 @@ type ServerConfig struct {
 type DbConfig struct {
 	Driver string
 	Source string
+}
+
+type TokenConfig struct {
+	SymmetricKey   string `mapstructure:"symmetric_key"`
+	AccessDuration time.Duration
 }
 
 func LoadConfig(path string) (config Config, err error) {

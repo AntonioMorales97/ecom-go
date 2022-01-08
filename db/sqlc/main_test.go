@@ -6,8 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/AntonioMorales97/ecom-go/internal/config"
-	"github.com/AntonioMorales97/ecom-go/internal/logger"
+	"github.com/AntonioMorales97/ecom-go/pkg/util"
 	_ "github.com/lib/pq"
 
 	"go.uber.org/zap"
@@ -17,12 +16,12 @@ var testQueries *Queries
 var testDB *sql.DB
 
 func TestMain(m *testing.M) {
-	config, err := config.LoadConfig("../..")
+	config, err := util.LoadConfig("../..")
 	if err != nil {
 		log.Fatal("failed to init Viper", zap.Error(err))
 	}
 
-	err = logger.InitializeZapCustomLogger(config.Env)
+	err = util.InitializeZapCustomLogger(config.Env)
 	if err != nil {
 		log.Fatal("failed to init logger")
 	}
