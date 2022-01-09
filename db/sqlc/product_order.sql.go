@@ -68,18 +68,20 @@ func (q *Queries) GetProductOrder(ctx context.Context, id int64) (ProductOrder, 
 
 const listProductOrders = `-- name: ListProductOrders :many
 SELECT id, owner, quantity, product_id, created_at, updated_at FROM product_order
+WHERE owner = $1
 ORDER BY id
-LIMIT $1
-OFFSET $2
+LIMIT $2
+OFFSET $3
 `
 
 type ListProductOrdersParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Owner  string `json:"owner"`
+	Limit  int32  `json:"limit"`
+	Offset int32  `json:"offset"`
 }
 
 func (q *Queries) ListProductOrders(ctx context.Context, arg ListProductOrdersParams) ([]ProductOrder, error) {
-	rows, err := q.db.QueryContext(ctx, listProductOrders, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listProductOrders, arg.Owner, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

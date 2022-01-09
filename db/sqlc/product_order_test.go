@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomProductOrder(t *testing.T) ProductOrder {
+func createRandomProductOrder(t *testing.T) (ProductOrder, User) {
 	product := createRandomProduct(t)
 	user := createRandomUser(t)
 	quantity := util.RandomInt32(1, 1000)
@@ -25,7 +25,7 @@ func createRandomProductOrder(t *testing.T) ProductOrder {
 	require.Equal(t, product.ID, productOrder.ProductID)
 	require.Equal(t, quantity, productOrder.Quantity)
 	require.Equal(t, productOrder.Owner, user.Username)
-	return productOrder
+	return productOrder, user
 }
 
 func TestCreateProductOrder(t *testing.T) {
@@ -33,7 +33,7 @@ func TestCreateProductOrder(t *testing.T) {
 }
 
 func TestGetProductOrder(t *testing.T) {
-	productOrder1 := createRandomProductOrder(t)
+	productOrder1, _ := createRandomProductOrder(t)
 	productOrder2, err := testQueries.GetProductOrder(context.Background(), productOrder1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, productOrder2)
@@ -47,7 +47,7 @@ func TestGetProductOrder(t *testing.T) {
 }
 
 func TestUpdateProductOrder(t *testing.T) {
-	productOrder1 := createRandomProductOrder(t)
+	productOrder1, _ := createRandomProductOrder(t)
 
 	arg := UpdateProductOrderQuantityParams{
 		productOrder1.ID,
@@ -65,7 +65,7 @@ func TestUpdateProductOrder(t *testing.T) {
 }
 
 func TestDeleteProductOrder(t *testing.T) {
-	productOrder1 := createRandomProductOrder(t)
+	productOrder1, _ := createRandomProductOrder(t)
 	err := testQueries.DeleteProductOrder(context.Background(), productOrder1.ID)
 	require.NoError(t, err)
 
@@ -76,20 +76,23 @@ func TestDeleteProductOrder(t *testing.T) {
 }
 
 func TestListProductOrder(t *testing.T) {
+	var lastUser User
 	for i := 0; i < 10; i++ {
-		createRandomProductOrder(t)
+		_, lastUser = createRandomProductOrder(t)
 	}
 
 	arg := ListProductOrdersParams{
+		Owner:  lastUser.Username,
 		Limit:  5,
-		Offset: 5,
+		Offset: 0,
 	}
 
 	productOrders, err := testQueries.ListProductOrders(context.Background(), arg)
 	require.NoError(t, err)
-	require.Len(t, productOrders, 5)
+	require.NotEmpty(t, productOrders)
 
-	for _, product := range productOrders {
-		require.NotEmpty(t, product)
+	for _, productOrder := range productOrders {
+		require.NotEmpty(t, productOrder)
+		require.Equal(t, lastUser.Username, productOrder.Owner)
 	}
 }
